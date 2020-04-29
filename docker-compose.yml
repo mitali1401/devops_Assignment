@@ -1,0 +1,36 @@
+version: '3'
+services:
+  db_server:
+    build:
+      context: ./mysql-image
+    environment:
+      MYSQL_ROOT_PASSWORD: rc
+      MYSQL_DATABASE: restapi
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rc
+    container_name: golang_db2
+    ports:
+      - "3306:3306"
+    volumes:
+        - mysql_data:/var/lib/mysql
+    tty: true
+  app:
+    build:
+      context: .
+    container_name: golang_app
+    ports:
+      - "8080:8080"
+    tty: true
+    depends_on:
+      - db_server
+    environment:
+      MYSQL_ROOT_PASSWORD: rc
+      MYSQL_DATABASE: restapi
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rc
+
+    links:
+      - db_server:restapi
+    command: go run go/src/github.com/pucsd2020-pp/rest-api/main.go
+volumes:
+        mysql_data:
